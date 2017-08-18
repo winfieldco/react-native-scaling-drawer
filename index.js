@@ -43,12 +43,16 @@ class SwipeAbleDrawer extends Component {
   };
 
   _onStartShouldSetPanResponder = (e, gestureState) => {
+    var self = this;
     if (this.state.isOpen) {
       this.scale = this.props.scalingFactor;
       this.translateX = this.maxTranslateXValue;
       this.setState({isOpen: false}, () => {
+        this.props.onWillClose && this.props.onWillClose();
         this.props.onClose && this.props.onClose();
-        this.onDrawerAnimation()
+        this.onDrawerAnimation(function() {
+          self.props.onDidClose && self.props.onDidClose();
+        })
       });
     }
   };
@@ -79,25 +83,32 @@ class SwipeAbleDrawer extends Component {
   };
 
   _onPanResponderRelease = (e, {dx}) => {
+    var self = this;
     if (dx < 0 && !this.state.isOpen) return false;
     if (dx > width * 0.1) {
       this.setState({isOpen: true}, () => {
         this.scale = this.props.scalingFactor;
         this.translateX = this.maxTranslateXValue;
+        this.props.onWillOpen && this.props.onWillOpen();
         this.props.onOpen && this.props.onOpen();
       });
-      this.onDrawerAnimation();
+      this.onDrawerAnimation(function() {
+        self.props.onDidOpen && self.props.onDidOpen();
+      });
     } else {
       this.setState({isOpen: false}, () => {
         this.scale = 1;
         this.translateX = 0;
+        this.props.onWillClose && this.props.onWillClose();
         this.props.onClose && this.props.onClose();
       });
-      this.onDrawerAnimation();
+      this.onDrawerAnimation(function() {
+        self.props.onDidClose && self.props.onDidClose();
+      });
     }
   };
 
-  onDrawerAnimation() {
+  onDrawerAnimation(callback) {
     this.drawerAnimation.setValue(0);
     Animated.timing(
       this.drawerAnimation,
@@ -106,7 +117,7 @@ class SwipeAbleDrawer extends Component {
         duration: this.props.duration || 250,
         Easing: Easing.linear
       }
-    ).start();
+    ).start(callback);
   }
 
 
@@ -140,20 +151,28 @@ class SwipeAbleDrawer extends Component {
   }
 
   close = () => {
+    var self = this;
     this.scale = this.props.scalingFactor;
     this.translateX = this.maxTranslateXValue;
     this.setState({isOpen: false}, () => {
-      this.onDrawerAnimation();
+      this.onDrawerAnimation(function() {
+        self.props.onDidClose && self.props.onDidClose();
+      });
+      this.props.onWillClose && this.props.onWillClose();
       this.props.onClose && this.props.onClose();
     });
   };
 
   open = () => {
+    var self = this;
     this.scale = 1;
     this.translateX = 0;
     this.setState({isOpen: true}, () => {
+      this.props.onWillOpen && this.props.onWillOpen();
       this.props.onOpen && this.props.onOpen();
-      this.onDrawerAnimation()
+      this.onDrawerAnimation(function() {
+        self.props.onDidOpen && self.props.onDidOpen();
+      })
     })
   };
 
