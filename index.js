@@ -14,6 +14,7 @@ class SwipeAbleDrawer extends Component {
     scalingFactor: 0.5,
     minimizeFactor: 0.5,
     swipeOffset: 10,
+    duration: 250,
   };
 
   constructor(props) {
@@ -114,7 +115,7 @@ class SwipeAbleDrawer extends Component {
       this.drawerAnimation,
       {
         toValue: 1,
-        duration: this.props.duration || 250,
+        duration: this.props.duration,
         Easing: Easing.linear
       }
     ).start(callback);
