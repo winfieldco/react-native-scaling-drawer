@@ -116,7 +116,8 @@ class SwipeAbleDrawer extends Component {
       {
         toValue: 1,
         duration: this.props.duration,
-        Easing: Easing.linear
+        Easing: Easing.linear,
+        useNativeDriver: true,        
       }
     ).start(callback);
   }
